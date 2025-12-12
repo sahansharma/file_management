@@ -1,0 +1,29 @@
+1. User Authentication & Authorization
+Method	Endpoint	Description	Notes
+POST	/api/auth/register	Register a new user with email/password	Hash password, validate email
+POST	/api/auth/login	Login and receive JWT	Returns token for authentication
+GET	/api/auth/me	Get logged-in user details	Requires JWT
+
+
+2. Folder Management
+Method	Endpoint	Description	Notes
+POST	/api/folders	Create a new folder	Requires name
+GET	/api/folders	List all folders of a user	JWT-protected
+GET	/api/folders/:id	Get details of a specific folder	Optional: include files
+PATCH	/api/folders/:id	Rename a folder	JWT-protected, only owner
+DELETE	/api/folders/:id	Delete a folder	Deletes all files inside (cascade)
+
+
+3. File Management
+Method	Endpoint	Description	Notes
+POST	/api/files	Upload a file	Multer handles storage; folderId optional
+GET	/api/files	List all user files	Include metadata: filename, folder, size, MIME, uploadedAt
+GET	/api/files/:id	Download file by ID	JWT-protected, only owner can access
+GET	/api/files/name/:filename	Download file by filename	JWT-protected
+PATCH	/api/files/:id	Move file to another folder or rename	Optional folder change
+DELETE	/api/files/:id	Delete a file	Remove from DB and storage
+
+
+4. Analytics & Reports
+Method	Endpoint	Description	Notes
+GET	/api/analytics/usage	Get total files uploaded, total storage used	Per authenticated user
