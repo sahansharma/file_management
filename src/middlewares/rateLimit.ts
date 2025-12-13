@@ -1,33 +1,13 @@
-import { Request, Response, NextFunction } from "express";
+import { rateLimit } from 'express-rate-limit'
+import { link } from "node:fs";
 
-type Entry = { count: number; resetAt: number };
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	ipv6Subnet: 56, // Set to 60 or 64 to be less aggressive, or 52 or 48 to be more aggressive
+	// store: ... , // Redis, Memcached, etc. See below.
+})
 
-const store = new Map<string, Entry>();
-
-const DEFAULT_WINDOW = 60_000; // 1 minute
-const DEFAULT_LIMIT = 100;
-
-export const rateLimit = (maxRequests = DEFAULT_LIMIT, windowMs = DEFAULT_WINDOW) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const key = req.ip || (req.headers["x-forwarded-for"] as string) || "unknown";
-    const now = Date.now();
-    const entry = store.get(key);
-
-    if (!entry || entry.resetAt <= now) {
-      store.set(key, { count: 1, resetAt: now + windowMs });
-      return next();
-    }
-
-    if (entry.count >= maxRequests) {
-      res.setHeader("Retry-After", String(Math.ceil((entry.resetAt - now) / 1000)));
-      return res.status(429).json({ message: "Too many requests" });
-    }
-
-    entry.count += 1;
-    store.set(key, entry);
-    next();
-  };
-};
-
-// default instance
-export const defaultRateLimit = rateLimit();
+export default limiter;

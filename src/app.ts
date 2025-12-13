@@ -7,8 +7,8 @@ const app: Express = express();
 app.use(express.json());
 
 // rate limiting
-import { defaultRateLimit } from "./middlewares/rateLimit";
-app.use(defaultRateLimit);
+import limiter from "./middlewares/rateLimit";
+app.use(limiter);
 
 //routes
 import folderRoutes from "./routes/folderRoutes";
