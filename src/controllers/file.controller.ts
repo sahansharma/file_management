@@ -25,7 +25,7 @@ export const uploadFile = async (req: AuthRequest, res: Response, next: NextFunc
       },
     });
 
-    ResponseHandler.success(res, dbFile, "File uploaded successfully");
+    ResponseHandler.success(res, { id: dbFile.id, filename: dbFile.filename }, "File uploaded successfully");
   } catch (err) {
     console.error("Upload file error:", err);
     next(err);
