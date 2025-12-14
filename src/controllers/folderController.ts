@@ -1,14 +1,15 @@
 // src/controllers/folderController.ts
-import { Response } from "express";
+import { Response, NextFunction } from "express";
 import prisma from "../prisma/client";
 import { AuthRequest } from "../middlewares/authMiddleware";
+import { ResponseHandler } from "../utils/responses/responseHandler";
+import { ApiError } from "../utils/errors/apiError";
 
 // Create a new folder
-export const createFolder = async (req: AuthRequest, res: Response) => {
+export const createFolder = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { name } = req.body;
-
-    if (!name) return res.status(400).json({ message: "Folder name is required" });
+    if (!name) throw new ApiError("Folder name is required", 400);
 
     const folder = await prisma.folder.create({
       data: {
@@ -17,72 +18,70 @@ export const createFolder = async (req: AuthRequest, res: Response) => {
       }
     });
 
-    res.status(201).json(folder);
+    ResponseHandler.success(res, folder, "Folder created successfully");
   } catch (err) {
     console.error("Create folder error:", err);
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 };
 
 // List all folders for a user
-export const getFolders = async (req: AuthRequest, res: Response) => {
+export const getFolders = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const folders = await prisma.folder.findMany({
       where: { userId: req.user!.id },
       include: { files: true }
     });
 
-    res.json(folders);
+    ResponseHandler.success(res, folders, "Folders fetched successfully");
   } catch (err) {
     console.error("Get folders error:", err);
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 };
 
 // Get a specific folder
-export const getFolderById = async (req: AuthRequest, res: Response) => {
+export const getFolderById = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
-
     const folder = await prisma.folder.findFirst({
       where: { id, userId: req.user!.id },
       include: { files: true }
     });
 
-    if (!folder) return res.status(404).json({ message: "Folder not found" });
+    if (!folder) throw new ApiError("Folder not found", 404);
 
-    res.json(folder);
+    ResponseHandler.success(res, folder, "Folder fetched successfully");
   } catch (err) {
     console.error("Get folder error:", err);
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 };
 
 // Rename a folder
-export const renameFolder = async (req: AuthRequest, res: Response) => {
+export const renameFolder = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
     const { name } = req.body;
 
-    if (!name) return res.status(400).json({ message: "New name is required" });
+    if (!name) throw new ApiError("New name is required", 400);
 
     const folder = await prisma.folder.updateMany({
       where: { id, userId: req.user!.id },
       data: { name }
     });
 
-    if (folder.count === 0)
-      return res.status(404).json({ message: "Folder not found or unauthorized" });
+    if (folder.count === 0) throw new ApiError("Folder not found or unauthorized", 404);
 
-    res.json({ message: "Folder renamed" });
+    ResponseHandler.success(res, null, "Folder renamed successfully");
   } catch (err) {
     console.error("Rename folder error:", err);
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 };
 
 // Delete a folder (cascade)
-export const deleteFolder = async (req: AuthRequest, res: Response) => {
+export const deleteFolder = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
 
@@ -96,12 +95,11 @@ export const deleteFolder = async (req: AuthRequest, res: Response) => {
       where: { id, userId: req.user!.id }
     });
 
-    if (folder.count === 0)
-      return res.status(404).json({ message: "Folder not found or unauthorized" });
+    if (folder.count === 0) throw new ApiError("Folder not found or unauthorized", 404);
 
-    res.json({ message: "Folder deleted" });
+    ResponseHandler.success(res, null, "Folder deleted successfully");
   } catch (err) {
     console.error("Delete folder error:", err);
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 };

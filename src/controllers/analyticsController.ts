@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import prisma from "../prisma/client";
+import { ResponseHandler } from "../utils/responses/responseHandler";
 
 export const getUsage = async (req: AuthRequest, res: Response) => {
   try {
@@ -12,13 +13,15 @@ export const getUsage = async (req: AuthRequest, res: Response) => {
       _sum: { size: true },
     });
 
-    res.json({
+    ResponseHandler.success(res, {
       totalFiles: analytics._count.id,
       totalStorage: Number(analytics._sum.size ?? 0),
-    });
-  } catch (err) {
-    console.error("Analytics error:", err);
-    res.status(500).json({ message: "Server error" });
+    },"Analytics retrieved successfully");
+    } catch(err){
+      console.error("Analytics error:", err);
+    ResponseHandler.error(
+      res, "Server error", (err as Error).message, 500
+    );
   }
 };
 
