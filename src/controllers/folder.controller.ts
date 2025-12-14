@@ -1,7 +1,7 @@
 // src/controllers/folderController.ts
 import { Response, NextFunction } from "express";
 import prisma from "../prisma/client";
-import { AuthRequest } from "../middlewares/authMiddleware";
+import { AuthRequest } from "../middlewares/auth.middleware";
 import { ResponseHandler } from "../utils/responses/responseHandler";
 import { ApiError } from "../utils/errors/apiError";
 

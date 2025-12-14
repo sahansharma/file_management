@@ -6,8 +6,8 @@ import {
   getFolderById,
   renameFolder,
   deleteFolder
-} from "../controllers/folderController";
-import { authenticateJWT } from "../middlewares/authMiddleware";
+} from "../controllers/folder.controller";
+import { authenticateJWT } from "../middlewares/auth.middleware";
 
 const router = Router();
 router.use(authenticateJWT);

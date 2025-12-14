@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import prisma from "../prisma/client";
 import { hashPassword, comparePassword } from "../utils/hash";
 import { signToken } from "../utils/jwt";
-import { AuthRequest } from "../middlewares/authMiddleware";
+import { AuthRequest } from "../middlewares/auth.middleware";
 import { ResponseHandler } from "../utils/responses/responseHandler";
 import { ApiError } from "../utils/errors/apiError";
 import { z } from "zod";

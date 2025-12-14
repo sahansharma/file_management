@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticateJWT } from "../middlewares/authMiddleware";
+import { authenticateJWT } from "../middlewares/auth.middleware";
 import {
   uploadFile,
   listFiles,
@@ -7,9 +7,9 @@ import {
   downloadFileByName,
   updateFile,
   deleteFile,
-} from "../controllers/fileController";
-import { upload } from "../middlewares/multerMiddleware";
-import { validateFile } from "../middlewares/validateFile";
+} from "../controllers/file.controller";
+import { upload } from "../middlewares/multer.middleware";
+import { validateFile } from "../middlewares/validateFile.middleware";
 
 const router = Router();
 

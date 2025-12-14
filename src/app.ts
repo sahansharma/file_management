@@ -1,6 +1,6 @@
 import express, { Express } from "express";  //esModuleInterop
-import limiter from "./middlewares/rateLimit";
-import { errorMiddleware } from "./middlewares/errorMiddleware";
+import limiter from "./middlewares/rateLimit.middleware";
+import { errorMiddleware } from "./middlewares/error.middleware";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -13,10 +13,10 @@ app.use(limiter);
 app.use(errorMiddleware);
 
 //routes
-import folderRoutes from "./routes/folderRoutes";
-import fileRoutes from "./routes/fileRoutes";
-import analyticsRoutes from "./routes/analyticsRoutes";
-import authRoutes from "./routes/authRoutes";
+import folderRoutes from "./routes/folder.routes";
+import fileRoutes from "./routes/file.routes";
+import analyticsRoutes from "./routes/analytics.routes";
+import authRoutes from "./routes/auth.routes";
 
 app.use("/api/folders", folderRoutes);
 app.use("/api/files", fileRoutes);

@@ -1,4 +1,4 @@
-import { AuthRequest } from "../middlewares/authMiddleware";
+import { AuthRequest } from "../middlewares/auth.middleware";
 import { Response, NextFunction } from "express";
 import prisma from "../prisma/client";
 import fs from "fs";
