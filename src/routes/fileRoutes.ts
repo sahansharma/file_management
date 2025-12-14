@@ -13,11 +13,13 @@ import { validateFile } from "../middlewares/validateFile";
 
 const router = Router();
 
-router.post("/", authenticateJWT, upload.single("file"), validateFile, uploadFile);
-router.get("/", authenticateJWT, listFiles);
-router.get("/:id", authenticateJWT, downloadFileById);
-router.get("/name/:filename", authenticateJWT, downloadFileByName);
-router.patch("/:id", authenticateJWT, updateFile);
-router.delete("/:id", authenticateJWT, deleteFile);
+router.use(authenticateJWT);
+
+router.post("/", upload.single("file"), validateFile, uploadFile);
+router.get("/", listFiles);
+router.get("/:id", downloadFileById);
+router.get("/name/:filename", downloadFileByName);
+router.patch("/:id", updateFile);
+router.delete("/:id", deleteFile);
 
 export default router;

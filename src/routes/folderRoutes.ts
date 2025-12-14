@@ -10,11 +10,12 @@ import {
 import { authenticateJWT } from "../middlewares/authMiddleware";
 
 const router = Router();
+router.use(authenticateJWT);
 
-router.post("/", authenticateJWT, createFolder);
-router.get("/", authenticateJWT, getFolders);
-router.get("/:id", authenticateJWT, getFolderById);
-router.patch("/:id", authenticateJWT, renameFolder);
-router.delete("/:id", authenticateJWT, deleteFolder);
+router.post("/", createFolder);
+router.get("/", getFolders);
+router.get("/:id", getFolderById);
+router.patch("/:id", renameFolder);
+router.delete("/:id", deleteFolder);
 
 export default router;
