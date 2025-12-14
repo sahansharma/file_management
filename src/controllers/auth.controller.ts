@@ -30,7 +30,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   try {
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
-      throw new ApiError("Validation failed", 400, parsed.error.errors);
+      throw new ApiError("Validation failed", 400, parsed.error.issues);
     }
 
     const { email, password } = parsed.data;
@@ -51,7 +51,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   try {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
-      throw new ApiError("Validation failed", 400, parsed.error.errors);
+      throw new ApiError("Validation failed", 400, parsed.error.issues);
     }
 
     const { email, password } = parsed.data;
