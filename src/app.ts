@@ -1,4 +1,6 @@
 import express, { Express } from "express";  //esModuleInterop
+import limiter from "./middlewares/rateLimit";
+import { errorMiddleware } from "./middlewares/errorMiddleware";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -7,8 +9,8 @@ const app: Express = express();
 app.use(express.json());
 
 // rate limiting
-import limiter from "./middlewares/rateLimit";
 app.use(limiter);
+app.use(errorMiddleware);
 
 //routes
 import folderRoutes from "./routes/folderRoutes";
