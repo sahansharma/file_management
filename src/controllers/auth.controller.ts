@@ -5,35 +5,10 @@ import { signToken } from "../utils/jwt";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import { ResponseHandler } from "../utils/responses/responseHandler";
 import { ApiError } from "../utils/errors/apiError";
-import { z } from "zod";
-
-// schema registration input
-const registerSchema = z.object({
-  email: z.string().email({ message: "Invalid email format" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
-    .max(32, { message: "Password cannot exceed 32 characters" })
-    .refine((val) => /[a-z]/.test(val), { message: "Password must contain at least one lowercase letter" })
-    .refine((val) => /[A-Z]/.test(val), { message: "Password must contain at least one uppercase letter" })
-    .refine((val) => /\d/.test(val), { message: "Password must contain at least one number" })
-    .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), { message: "Password must contain at least one special character" }),
-});
-
-// schema login input
-const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email format" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-});
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const parsed = registerSchema.safeParse(req.body);
-    if (!parsed.success) {
-      throw new ApiError("Validation failed", 400, parsed.error.issues);
-    }
-
-    const { email, password } = parsed.data;
+    const { email, password } = req.body;
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) throw new ApiError("Email already in use", 409);
 
@@ -49,12 +24,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const parsed = loginSchema.safeParse(req.body);
-    if (!parsed.success) {
-      throw new ApiError("Validation failed", 400, parsed.error.issues);
-    }
-
-    const { email, password } = parsed.data;
+    const { email, password } = req.body;
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user || !(await comparePassword(password, user.password))) {
